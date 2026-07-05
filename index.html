@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تجربة الربط مع Firebase</title>
+    <title>AqarLak - تجربة الربط</title>
     <style>
         body {
             display: flex;
@@ -11,18 +11,20 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f0f2f5;
+            font-family: sans-serif;
+            background-color: #f4f6f9;
         }
         button {
-            padding: 15px 30px;
+            padding: 16px 32px;
             font-size: 18px;
+            font-weight: bold;
             color: white;
             background-color: #007bff;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px rgba(0,123,255,0.3);
+            transition: background-color 0.2s;
         }
         button:active {
             background-color: #0056b3;
@@ -31,15 +33,13 @@
 </head>
 <body>
 
-    <!-- الزر الذي ستضغط عليه في الموقع -->
-    <button onclick="sendTestData()">إرسال تجربة إلى Firebase</button>
+    <button id="btnSend">إرسال تجربة إلى Firebase</button>
 
-    <!-- 1. تحميل مكتبات Firebase الأساسية المضمونة للهاتف -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    <script>
-        // 2. إعدادات مشروعك الخاص بك (AqarLak)
+        // إعدادات مشروعك الخاصة (AqarLak) كما هي مستخرجة من حسابك
         const firebaseConfig = {
             apiKey: "AIzaSyAyqYbnurEZe7uMe3eXO07qefcDJUdvlPY",
             authDomain: "aqarlak-9009a.firebaseapp.com",
@@ -51,23 +51,25 @@
             measurementId: "G-VWBMS8XF9S"
         };
 
-        // 3. تشغيل الـ Firebase في الموقع
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+        // تشغيل التطبيق وقاعدة البيانات
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
-        // 4. الدالة التي تعمل عند الضغط على الزر
-        function sendTestData() {
-            db.ref('test/').set({
-                message: "تم الإرسال من موقع بشار بنجاح!",
+        // ربط الزر بالدالة عند الضغط
+        document.getElementById("btnSend").addEventListener("click", () => {
+            // إرسال البيانات إلى مسار test
+            set(ref(db, 'test'), {
+                message: "تم الإرسال من موقع بشار بنجاح واشتغل الكود!",
+                status: "ناجح",
                 time: new Date().toLocaleTimeString()
             })
             .then(() => {
-                alert("مبروك! تم إرسال البيانات بنجاح إلى Firebase!");
+                alert("ممتاز يا بشار! تم إرسال البيانات بنجاح إلى Firebase واختفت كلمة null!");
             })
             .catch((error) => {
-                alert("حدث خطأ أثناء الإرسال: " + error.message);
+                alert("هناك مشكلة في القواعد أو الإدخال: " + error.message);
             });
-        }
+        });
     </script>
 
 </body>
