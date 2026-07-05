@@ -1,0 +1,13 @@
+<button onclick="sendTestData()">إرسال تجربة</button>
+
+<script>
+  function sendTestData() {
+    // نستخدم 'set' لإرسال بيانات تجريبية
+    const db = getDatabase(); // التأكد من تعريف db
+    set(ref(db, 'test/'), {
+      message: "مرحباً بشار! النظام يعمل بنجاح"
+    }).then(() => {
+      alert("تم إرسال البيانات إلى Firebase!");
+    });
+  }
+</script>
