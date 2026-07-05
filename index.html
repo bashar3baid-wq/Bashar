@@ -1,16 +1,74 @@
-<button id="testBtn">إرسال تجربة</button>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تجربة الربط مع Firebase</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            color: white;
+            background-color: #007bff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        button:active {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
 
-<script type="module">
-  import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
+    <!-- الزر الذي ستضغط عليه في الموقع -->
+    <button onclick="sendTestData()">إرسال تجربة إلى Firebase</button>
 
-  document.getElementById("testBtn").addEventListener("click", () => {
-    const db = getDatabase();
-    set(ref(db, 'test/'), {
-      message: "تم الإرسال من الموقع بنجاح!"
-    }).then(() => {
-      alert("تم الإرسال بنجاح!");
-    }).catch((error) => {
-      alert("حدث خطأ: " + error.message);
-    });
-  });
-</script>
+    <!-- 1. تحميل مكتبات Firebase الأساسية المضمونة للهاتف -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+
+    <script>
+        // 2. إعدادات مشروعك الخاص بك (AqarLak)
+        const firebaseConfig = {
+            apiKey: "AIzaSyAyqYbnurEZe7uMe3eXO07qefcDJUdvlPY",
+            authDomain: "aqarlak-9009a.firebaseapp.com",
+            databaseURL: "https://aqarlak-9009a-default-rtdb.firebaseio.com",
+            projectId: "aqarlak-9009a",
+            storageBucket: "aqarlak-9009a.firebasestorage.app",
+            messagingSenderId: "656527514630",
+            appId: "1:656527514630:web:d7dbc70d01de4ff5bc7787",
+            measurementId: "G-VWBMS8XF9S"
+        };
+
+        // 3. تشغيل الـ Firebase في الموقع
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // 4. الدالة التي تعمل عند الضغط على الزر
+        function sendTestData() {
+            db.ref('test/').set({
+                message: "تم الإرسال من موقع بشار بنجاح!",
+                time: new Date().toLocaleTimeString()
+            })
+            .then(() => {
+                alert("مبروك! تم إرسال البيانات بنجاح إلى Firebase!");
+            })
+            .catch((error) => {
+                alert("حدث خطأ أثناء الإرسال: " + error.message);
+            });
+        }
+    </script>
+
+</body>
+</html>
