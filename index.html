@@ -3,43 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AqarLak - تجربة الربط</title>
+    <title>حجز موعد صالون حلاقة</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    
     <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            font-family: sans-serif;
-            background-color: #f4f6f9;
-        }
-        button {
-            padding: 16px 32px;
-            font-size: 18px;
-            font-weight: bold;
-            color: white;
-            background-color: #007bff;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,123,255,0.3);
-            transition: background-color 0.2s;
-        }
-        button:active {
-            background-color: #0056b3;
-        }
+        body { font-family: Arial, sans-serif; background-color: #F4F6F9; padding: 20px; text-align: center; direction: rtl; }
+        .card { background: white; max-width: 450px; margin: auto; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h2 { color: #2C3E50; margin-bottom: 20px; }
+        label { display: block; text-align: right; margin-top: 10px; color: #7F8C8D; font-size: 14px; }
+        input, select { width: 100%; padding: 12px; margin: 8px 0 20px 0; border: 1px solid #BDC3C7; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
+        button { background-color: #1ABC9C; color: white; border: none; padding: 14px; width: 100%; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; }
+        button:hover { background-color: #16A085; }
     </style>
 </head>
 <body>
 
-    <button id="btnSend">إرسال تجربة إلى Firebase</button>
+    <div class="card">
+        <h2>✂️ حجز موعد صالون حلاقة ✂️</h2>
+        
+        <label>اسم الزبون:</label>
+        <input type="text" id="customerName" placeholder="أدخل اسمك هنا">
+        
+        <label>الخدمة المطلوبة:</label>
+        <select id="serviceType">
+            <option value="قص شعر">قص شعر</option>
+            <option value="حلاقة ذقن">حلاقة ذقن</option>
+            <option value="قص شعر + ذقن">قص شعر + ذقن</option>
+            <option value="تنظيف بشرة / كامل">تنظيف بشرة / باقة كاملة</option>
+        </select>
+        
+        <button onclick="sendBookingData()">تأكيد وإرسال الحجز 🚀</button>
+    </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-
-        // إعدادات مشروعك الخاصة (AqarLak) كما هي مستخرجة من حسابك
+    <script>
+        // كود الفايربيس البرتقالي الخاص بك
         const firebaseConfig = {
             apiKey: "AIzaSyAyqYbnurEZe7uMe3eXO07qefcDJUdvlPY",
             authDomain: "aqarlak-9009a.firebaseapp.com",
@@ -47,30 +45,35 @@
             projectId: "aqarlak-9009a",
             storageBucket: "aqarlak-9009a.firebasestorage.app",
             messagingSenderId: "656527514630",
-            appId: "1:656527514630:web:d7dbc70d01de4ff5bc7787",
-            measurementId: "G-VWBMS8XF9S"
+            appId: "1:656527514630:web:9b44decd58d7539ebc7787"
         };
+        
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
 
-        // تشغيل التطبيق وقاعدة البيانات
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+        function sendBookingData() {
+            const name = document.getElementById("customerName").value;
+            const service = document.getElementById("serviceType").value;
+            
+            if(name.trim() !== "") {
+                // تسجيل وقت إرسال الطلب تلقائياً لكي تراه في التطبيق
+                const currentTime = new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
 
-        // ربط الزر بالدالة عند الضغط
-        document.getElementById("btnSend").addEventListener("click", () => {
-            // إرسال البيانات إلى مسار test
-            set(ref(db, 'test'), {
-                message: "تم الإرسال من موقع بشار بنجاح واشتغل الكود!",
-                status: "ناجح",
-                time: new Date().toLocaleTimeString()
-            })
-            .then(() => {
-                alert("ممتاز يا بشار! تم إرسال البيانات بنجاح إلى Firebase واختفت كلمة null!");
-            })
-            .catch((error) => {
-                alert("هناك مشكلة في القواعد أو الإدخال: " + error.message);
-            });
-        });
+                // إرسال البيانات إلى مسار الحجوزات (barber_bookings)
+                database.ref('barber_bookings').push({
+                    customer_name: name,
+                    service_type: service,
+                    booking_time: currentTime
+                }).then(() => {
+                    alert("✅ تم إرسال حجزك بنجاح! ننتظرك في الصالون.");
+                    document.getElementById("customerName").value = "";
+                }).catch((error) => {
+                    alert("خطأ أثناء الحجز: " + error.message);
+                });
+            } else {
+                alert("الرجاء إدخال اسمك أولاً لتأكيد الحجز!");
+            }
+        }
     </script>
-
 </body>
 </html>
